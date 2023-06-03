@@ -5,6 +5,7 @@ import 'package:todoapp/src/provider/FirebaseProvider.dart';
 import 'package:todoapp/src/provider/TodoProvider.dart';
 import 'package:todoapp/src/views/LoadingScreen.dart';
 
+import '../provider/LoadingProvider.dart';
 import '../widget/commonwidget.dart';
 
 class TodoScreen extends ConsumerWidget {
@@ -15,8 +16,10 @@ class TodoScreen extends ConsumerWidget {
     final userAuth = ref.watch(firebaseAuthProvider);
     final dt = ref.watch(itemsProvider);
     final todo = ref.watch(todoProvider.notifier);
+    final load = ref.watch(loadingProvider.state);
 
     return dt.when(data: (data) {
+
       return Scaffold(
         appBar: AppBar(
           leading: const Loading(),
@@ -36,6 +39,7 @@ class TodoScreen extends ConsumerWidget {
               icon: const Icon(Icons.logout),
               color: grey,
               onPressed: () {
+                load.state = LoadingState.loaded;
                 userAuth.signOut();
               },
             )

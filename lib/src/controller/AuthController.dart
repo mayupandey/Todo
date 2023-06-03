@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nb_utils/nb_utils.dart';
@@ -17,14 +18,34 @@ class AuthController extends StateNotifier<UserModel?> {
       final authResult = await ref
           .watch(firebaseAuthProvider)
           .signInWithEmailAndPassword(email: email, password: password)
-          .whenComplete(() => a.state = LoadingState.loaded);
+          .catchError((error) {
+            toast("Something went wrong");
+            a.state = LoadingState.loaded;
+          })
+          .whenComplete(() => a.state = LoadingState.loaded)
+          .then((value) {
+            if (value.user == null) {
+              toast("Something went wrong");
+              a.state = LoadingState.loaded;
+            }
+          });
+
       state =
           UserModel(email: authResult.user!.email!, uid: authResult.user!.uid);
-    } catch (e) {
-      toast(e.toString());
-      debugPrint(e.toString());
+    } on FirebaseAuthException catch (e) {
+      print("exception $e");
+      toast("Something went wrong");
       a.state = LoadingState.loaded;
-      rethrow;
+      if (e.code == 'account-exists-with-different-credential') {
+        toast("Account Exist");
+
+        // ...
+      } else if (e.code == 'invalid-credential') {
+        toast("Invalid Credential");
+      }
+    } catch (e) {
+      debugPrint("${e}me yha hu");
+      a.state = LoadingState.loaded;
     }
   }
 
@@ -49,7 +70,7 @@ class AuthController extends StateNotifier<UserModel?> {
   Future<void> signOut() async {
     try {
       await ref.watch(firebaseAuthProvider).signOut();
-
+      a.state = LoadingState.loaded
       state = null;
     } catch (e) {
       toast(e.toString());
