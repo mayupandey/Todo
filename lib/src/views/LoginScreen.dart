@@ -56,7 +56,7 @@ class _SigninScreenState extends ConsumerState<SigninScreen> {
                           child: TextFormField(
                             decoration: bottomSheet("Email"),
                             validator: (value) {
-                              if (value == null || value.isEmpty) {
+                              if (value == null || value.isEmpty|| value.isValidEmail() ==false) {
                                 return 'Please enter an email';
                               }
                               return null;
