@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nb_utils/nb_utils.dart';
 import 'package:todoapp/src/provider/FirebaseProvider.dart';
 import 'package:todoapp/src/provider/LoadingProvider.dart';
 
@@ -20,6 +21,7 @@ class AuthController extends StateNotifier<UserModel?> {
       state =
           UserModel(email: authResult.user!.email!, uid: authResult.user!.uid);
     } catch (e) {
+      toast(e.toString());
       debugPrint(e.toString());
       a.state = LoadingState.loaded;
       rethrow;
@@ -36,6 +38,7 @@ class AuthController extends StateNotifier<UserModel?> {
       state =
           UserModel(email: authResult.user!.email!, uid: authResult.user!.uid);
     } catch (e) {
+      toast(e.toString());
       debugPrint(e.toString());
       a.state = LoadingState.loaded;
 
@@ -49,6 +52,7 @@ class AuthController extends StateNotifier<UserModel?> {
 
       state = null;
     } catch (e) {
+      toast(e.toString());
       debugPrint(e.toString());
       rethrow;
     }

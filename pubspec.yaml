@@ -33,7 +33,8 @@ dependencies:
   cloud_firestore:
   firebase_core:
   lottie:
-  go_router: 
+  go_router:
+  nb_utils:  
 
 
   flutter:
