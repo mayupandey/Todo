@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
+import 'package:nb_utils/nb_utils.dart';
 import 'package:todoapp/src/constant/StaticImageAssets.dart';
 import 'package:todoapp/src/constant/constants.dart';
 import 'package:todoapp/src/provider/FirebaseProvider.dart';
@@ -56,7 +57,9 @@ class _SigninScreenState extends ConsumerState<SigninScreen> {
                           child: TextFormField(
                             decoration: bottomSheet("Email"),
                             validator: (value) {
-                              if (value == null || value.isEmpty|| value.isValidEmail() ==false) {
+                              if (value == null ||
+                                  value.isEmpty ||
+                                  value.isValidEmail() == false) {
                                 return 'Please enter an email';
                               }
                               return null;
@@ -75,8 +78,12 @@ class _SigninScreenState extends ConsumerState<SigninScreen> {
                             obscureText: true,
                             decoration: bottomSheet("Password"),
                             validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter a password';
+                              if (value == null ||
+                                  value.isEmpty ||
+                                  value.length <= 6) {
+                                return value!.length <= 6
+                                    ? "Enter password greator than 6"
+                                    : 'Please enter a password';
                               }
                               return null;
                             },
@@ -102,9 +109,14 @@ class _SigninScreenState extends ConsumerState<SigninScreen> {
                             _formKey.currentState!.save();
                             loading.state = LoadingState.loading;
                             ref
-                                .read(firebaseAuthProvider)
+                                .watch(firebaseAuthProvider)
                                 .signInWithEmailAndPassword(
-                                    email: _email, password: _password);
+                                    email: _email, password: _password)
+                                .catchError((e) {
+
+                              loading.state = LoadingState.loaded;
+                              toast(e.toString());
+                            });
                           }
                         },
                         child: const SizedBox(

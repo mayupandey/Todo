@@ -60,20 +60,12 @@ class AuthController extends StateNotifier<UserModel?> {
           .watch(firebaseAuthProvider)
           .createUserWithEmailAndPassword(email: email, password: password)
           .whenComplete(() => a.state = LoadingState.loaded);
+      if(authResult.user==null){
+        a.state=LoadingState.loading;
+      }
       state =
           UserModel(email: authResult.user!.email!, uid: authResult.user!.uid);
-    } on FirebaseAuthException catch (e) {
-      print("exception $e");
-      toast("Something went wrong");
-      a.state = LoadingState.loaded;
-      if (e.code == 'account-exists-with-different-credential') {
-        toast("Account Exist");
-
-        // ...
-      } else if (e.code == 'invalid-credential') {
-        toast("Invalid Credential");
-      }
-    } catch (e) {
+    }  catch (e) {
       debugPrint("${e}me yha hu");
       a.state = LoadingState.loaded;
     }
